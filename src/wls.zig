@@ -12,7 +12,8 @@ pub const Wls = struct {
 };
 
 test "test Wls ok" {
-    const allocator = std.heap.general_purpose_allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
     var x_points = std.ArrayList(f64).init(allocator);
     defer x_points.deinit();
     try x_points.append(1);
