@@ -1,8 +1,8 @@
-TARGET=wls
-
+all: build
 build:
 	zig build
 
+.PHONY: run
 run:
 	zig build run
 

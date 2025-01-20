@@ -13,7 +13,10 @@ pub fn main() !void {
         .y_points = &x_points,
         .weights = &x_points,
     };
-    std.debug.print("{d}\n", .{wls_model.fit_linear_regression().get_slope()});
+    const fitted_model = wls_model.fit_linear_regression();
+    if (fitted_model) |model| {
+        std.debug.print("{d}\n", .{model.get_slope()});
+    }
 }
 
 test {
