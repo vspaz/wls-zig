@@ -1,5 +1,5 @@
 const std = @import("std");
-const wls = @import("wls.zig");
+const wls = @import("models/wls.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};

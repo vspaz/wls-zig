@@ -13,3 +13,7 @@ test:
 .PHONY: style-fix
 style-fix:
 	zig fmt .
+
+.PHONY: clean
+clean:
+	rm -rf zig-out
