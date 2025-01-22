@@ -1,5 +1,6 @@
 const std = @import("std");
 const point = @import("point.zig");
+const asserts = @import("asserts.zig");
 
 pub const Wls = struct {
     x_points: *std.ArrayList(f64),
@@ -7,6 +8,9 @@ pub const Wls = struct {
     weights: *std.ArrayList(f64),
 
     pub fn fit_linear_regression(self: Wls) ?point.Point {
+        asserts.assert_have_size_greater_than_two(self.x_points);
+        asserts.assert_have_same_size(self.x_points, self.y_points);
+
         var sum_of_weights: f64 = 0.0;
         var sum_of_products_of_weights_and_x_squared: f64 = 0.0;
         var sum_of_products_of_x_and_y_and_weights: f64 = 0.0;
@@ -45,7 +49,6 @@ pub const Wls = struct {
 };
 
 test "test wls model with weights ok" {
-    const expect = std.testing.expect;
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
@@ -64,11 +67,16 @@ test "test wls model with weights ok" {
     for ([_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 }) |item| {
         try y_points.append(item);
     }
-    for ([_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 }) |item| {
+    for ([_]f64{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 }) |item| {
         try weights.append(item);
     }
 
-    const wls = Wls{ .x_points = &x_points, .y_points = &x_points, .weights = &x_points };
+    const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
     const fitted_model = wls.fit_linear_regression();
-    try expect(fitted_model != null);
+
+    asserts.assert_not_null(fitted_model);
+    if (fitted_model) |model| {
+        asserts.assert_almost_equal(2.14285714, model.get_intercept(), 1.0e-6);
+        asserts.assert_almost_equal(0.150862, model.get_slope(), 1.0e-6);
+    }
 }
