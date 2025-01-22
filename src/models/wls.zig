@@ -114,3 +114,36 @@ test "test wls model with stable weights ok" {
         asserts.assert_almost_equal(0.25, model.slope, 1.0e-6);
     }
 }
+
+test "test horizontal line ok" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
+    var x_points = std.ArrayList(f64).init(allocator);
+    defer x_points.deinit();
+
+    var y_points = std.ArrayList(f64).init(allocator);
+    defer y_points.deinit();
+
+    var weights = std.ArrayList(f64).init(allocator);
+    defer weights.deinit();
+
+    for ([_]f64{ 0.0, 1.0 }) |item| {
+        try x_points.append(item);
+    }
+    for ([_]f64{ 10.0, 10.0 }) |item| {
+        try y_points.append(item);
+    }
+    for ([_]f64{ 1.0, 1.0 }) |item| {
+        try weights.append(item);
+    }
+
+    const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
+    const fitted_model = wls.fit_linear_regression();
+
+    asserts.assert_not_null(fitted_model);
+    if (fitted_model) |model| {
+        asserts.assert_equal(10.0, model.intercept);
+        asserts.assert_equal(0.0, model.slope);
+    }
+}

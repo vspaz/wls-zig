@@ -16,7 +16,7 @@ pub fn assert_have_same_size(array_1: *std.ArrayList(f64), array_2: *std.ArrayLi
 }
 
 pub fn assert_have_size_greater_than_two(array: *std.ArrayList(f64)) void {
-    assert(array.items.len > 2);
+    assert(array.items.len >= 2);
 }
 
 pub fn assert_true(condition: bool) void {
@@ -25,4 +25,8 @@ pub fn assert_true(condition: bool) void {
 
 pub fn assert_not_null(optional_point: ?point.Point) void {
     assert(optional_point != null);
+}
+
+pub fn assert_null(optional_point: ?point.Point) void {
+    assert(optional_point == null);
 }
