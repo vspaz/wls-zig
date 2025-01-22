@@ -7,6 +7,10 @@ pub fn assert_almost_equal(expected: f64, actual: f64, delta: f64) void {
     assert(delta > expected - actual);
 }
 
+pub fn assert_equal(expected: f64, actual: f64) void {
+    assert(expected == actual);
+}
+
 pub fn assert_have_same_size(array_1: *std.ArrayList(f64), array_2: *std.ArrayList(f64)) void {
     assert(array_1.items.len == array_2.items.len);
 }

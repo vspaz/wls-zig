@@ -15,7 +15,7 @@ pub fn main() !void {
     };
     const fitted_model = wls_model.fit_linear_regression();
     if (fitted_model) |model| {
-        std.debug.print("{d}\n", .{model.get_slope()});
+        std.debug.print("{d}\n", .{model.slope});
     }
 }
 

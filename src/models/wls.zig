@@ -10,6 +10,7 @@ pub const Wls = struct {
     pub fn fit_linear_regression(self: Wls) ?point.Point {
         asserts.assert_have_size_greater_than_two(self.x_points);
         asserts.assert_have_same_size(self.x_points, self.y_points);
+        asserts.assert_have_same_size(self.x_points, self.weights);
 
         var sum_of_weights: f64 = 0.0;
         var sum_of_products_of_weights_and_x_squared: f64 = 0.0;
@@ -76,7 +77,40 @@ test "test wls model with weights ok" {
 
     asserts.assert_not_null(fitted_model);
     if (fitted_model) |model| {
-        asserts.assert_almost_equal(2.14285714, model.get_intercept(), 1.0e-6);
-        asserts.assert_almost_equal(0.150862, model.get_slope(), 1.0e-6);
+        asserts.assert_almost_equal(2.14285714, model.intercept, 1.0e-6);
+        asserts.assert_almost_equal(0.150862, model.slope, 1.0e-6);
+    }
+}
+
+test "test wls model with stable weights ok" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
+    var x_points = std.ArrayList(f64).init(allocator);
+    defer x_points.deinit();
+
+    var y_points = std.ArrayList(f64).init(allocator);
+    defer y_points.deinit();
+
+    var weights = std.ArrayList(f64).init(allocator);
+    defer weights.deinit();
+
+    for ([_]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }) |item| {
+        try x_points.append(item);
+    }
+    for ([_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 }) |item| {
+        try y_points.append(item);
+    }
+    for ([_]f64{ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }) |item| {
+        try weights.append(item);
+    }
+
+    const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
+    const fitted_model = wls.fit_linear_regression();
+
+    asserts.assert_not_null(fitted_model);
+    if (fitted_model) |model| {
+        asserts.assert_almost_equal(2.14285714, model.intercept, 1.0e-6);
+        asserts.assert_almost_equal(0.25, model.slope, 1.0e-6);
     }
 }
