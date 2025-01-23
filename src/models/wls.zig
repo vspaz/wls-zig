@@ -3,9 +3,9 @@ const point = @import("point.zig");
 const asserts = @import("asserts.zig");
 
 pub const Wls = struct {
-    x_points: *std.ArrayList(f64),
-    y_points: *std.ArrayList(f64),
-    weights: *std.ArrayList(f64),
+    x_points: []const f64,
+    y_points: []const f64,
+    weights: []const f64,
 
     pub fn fit_linear_regression(self: Wls) ?point.Point {
         asserts.assert_have_size_greater_than_two(self.x_points);
@@ -23,10 +23,10 @@ pub const Wls = struct {
         var wi: f64 = 0.0;
         var product_of_xi_and_wi: f64 = 0.0;
 
-        for (0..self.x_points.items.len) |i| {
-            xi = self.x_points.items[i];
-            yi = self.y_points.items[i];
-            wi = self.weights.items[i];
+        for (0..self.x_points.len) |i| {
+            xi = self.x_points[i];
+            yi = self.y_points[i];
+            wi = self.weights[i];
 
             sum_of_weights += wi;
             product_of_xi_and_wi = xi * wi;
@@ -50,27 +50,9 @@ pub const Wls = struct {
 };
 
 test "test wls model with weights ok" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-
-    var x_points = std.ArrayList(f64).init(allocator);
-    defer x_points.deinit();
-
-    var y_points = std.ArrayList(f64).init(allocator);
-    defer y_points.deinit();
-
-    var weights = std.ArrayList(f64).init(allocator);
-    defer weights.deinit();
-
-    for ([_]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }) |item| {
-        try x_points.append(item);
-    }
-    for ([_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 }) |item| {
-        try y_points.append(item);
-    }
-    for ([_]f64{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 }) |item| {
-        try weights.append(item);
-    }
+    const x_points = [7]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
+    const y_points = [7]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 };
+    const weights = [7]f64{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 };
 
     const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
     const fitted_model = wls.fit_linear_regression();
@@ -83,27 +65,9 @@ test "test wls model with weights ok" {
 }
 
 test "test wls model with stable weights ok" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-
-    var x_points = std.ArrayList(f64).init(allocator);
-    defer x_points.deinit();
-
-    var y_points = std.ArrayList(f64).init(allocator);
-    defer y_points.deinit();
-
-    var weights = std.ArrayList(f64).init(allocator);
-    defer weights.deinit();
-
-    for ([_]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }) |item| {
-        try x_points.append(item);
-    }
-    for ([_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 }) |item| {
-        try y_points.append(item);
-    }
-    for ([_]f64{ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }) |item| {
-        try weights.append(item);
-    }
+    const x_points = [7]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
+    const y_points = [7]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 };
+    const weights = [7]f64{ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
 
     const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
     const fitted_model = wls.fit_linear_regression();
@@ -116,29 +80,11 @@ test "test wls model with stable weights ok" {
 }
 
 test "test horizontal line ok" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-
-    var x_points = std.ArrayList(f64).init(allocator);
-    defer x_points.deinit();
-
-    var y_points = std.ArrayList(f64).init(allocator);
-    defer y_points.deinit();
-
-    var weights = std.ArrayList(f64).init(allocator);
-    defer weights.deinit();
-
-    for ([_]f64{ 0.0, 1.0 }) |item| {
-        try x_points.append(item);
-    }
-    for ([_]f64{ 10.0, 10.0 }) |item| {
-        try y_points.append(item);
-    }
-    for ([_]f64{ 1.0, 1.0 }) |item| {
-        try weights.append(item);
-    }
-
-    const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
+    const wls = Wls{
+        .x_points = &.{ 0.0, 1.0 },
+        .y_points = &.{ 10.0, 10.0 },
+        .weights = &.{ 1.0, 1.0 },
+    };
     const fitted_model = wls.fit_linear_regression();
 
     asserts.assert_not_null(fitted_model);
