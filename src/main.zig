@@ -1,5 +1,6 @@
 const std = @import("std");
 const wls = @import("models/wls.zig");
+const asserts = @import("models/asserts.zig");
 
 pub fn main() !void {
     const wls_model = wls.Wls{
@@ -8,8 +9,11 @@ pub fn main() !void {
         .weights = &.{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 },
     };
     const fitted_model = wls_model.fit_linear_regression();
-    if (fitted_model) |model| {
-        std.debug.print("{d}\n", .{model.slope});
+
+    asserts.assert_not_null(fitted_model);
+    if (fitted_model) |line| {
+        asserts.assert_almost_equal(2.14285714, line.intercept, 1.0e-6);
+        asserts.assert_almost_equal(0.150862, line.slope, 1.0e-6);
     }
 }
 
