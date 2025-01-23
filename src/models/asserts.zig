@@ -27,6 +27,14 @@ pub fn assert_not_null(optional_point: ?point.Point) void {
     assert(optional_point != null);
 }
 
+pub fn assert_model_can_be_fit(optional_point: ?point.Point) void {
+    assert_not_null(optional_point);
+}
+
 pub fn assert_null(optional_point: ?point.Point) void {
     assert(optional_point == null);
+}
+
+pub fn assert_model_cant_be_fit(optional_point: ?point.Point) void {
+    assert_null(optional_point);
 }

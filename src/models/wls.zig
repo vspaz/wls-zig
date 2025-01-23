@@ -57,7 +57,7 @@ test "test wls model with weights ok" {
     const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
     const fitted_model = wls.fit_linear_regression();
 
-    asserts.assert_not_null(fitted_model);
+    asserts.assert_model_can_be_fit(fitted_model);
     if (fitted_model) |model| {
         asserts.assert_almost_equal(2.14285714, model.intercept, 1.0e-6);
         asserts.assert_almost_equal(0.150862, model.slope, 1.0e-6);
@@ -72,7 +72,7 @@ test "test wls model with stable weights ok" {
     const wls = Wls{ .x_points = &x_points, .y_points = &y_points, .weights = &weights };
     const fitted_model = wls.fit_linear_regression();
 
-    asserts.assert_not_null(fitted_model);
+    asserts.assert_model_can_be_fit(fitted_model);
     if (fitted_model) |model| {
         asserts.assert_almost_equal(2.14285714, model.intercept, 1.0e-6);
         asserts.assert_almost_equal(0.25, model.slope, 1.0e-6);
@@ -87,9 +87,47 @@ test "test horizontal line ok" {
     };
     const fitted_model = wls.fit_linear_regression();
 
-    asserts.assert_not_null(fitted_model);
+    asserts.assert_model_can_be_fit(fitted_model);
     if (fitted_model) |model| {
         asserts.assert_equal(10.0, model.intercept);
         asserts.assert_equal(0.0, model.slope);
+    }
+}
+
+test "test vertical line ok" {
+    const wls = Wls{
+        .x_points = &.{ 1.0, 1.0 },
+        .y_points = &.{ 0.0, 1.0 },
+        .weights = &.{ 1.0, 1.0 },
+    };
+    asserts.assert_model_cant_be_fit(wls.fit_linear_regression());
+}
+
+test "test run uphill ok" {
+    const wls = Wls{
+        .x_points = &.{ 0.0, 1.0 },
+        .y_points = &.{ 0.0, 1.0 },
+        .weights = &.{ 1.0, 1.0 },
+    };
+    const fitted_model = wls.fit_linear_regression();
+
+    asserts.assert_model_can_be_fit(fitted_model);
+    if (fitted_model) |model| {
+        asserts.assert_equal(0.0, model.intercept);
+        asserts.assert_equal(1.0, model.slope);
+    }
+}
+
+test "test run downhill ok" {
+    const wls = Wls{
+        .x_points = &.{ 1.0, 0.0 },
+        .y_points = &.{ 0.0, 1.0 },
+        .weights = &.{ 1.0, 1.0 },
+    };
+    const fitted_model = wls.fit_linear_regression();
+    asserts.assert_model_can_be_fit(fitted_model);
+    if (fitted_model) |model| {
+        asserts.assert_equal(1.0, model.intercept);
+        asserts.assert_equal(-1.0, model.slope);
     }
 }
