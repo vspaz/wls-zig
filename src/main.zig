@@ -3,11 +3,11 @@ const wls = @import("models/wls.zig");
 const asserts = @import("models/asserts.zig");
 
 pub fn main() !void {
-    const wls_model = wls.Wls{
-        .x_points = &.{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 },
-        .y_points = &.{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 },
-        .weights = &.{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 },
-    };
+    const x_points = [_]f64{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
+    const y_points = [_]f64{ 1.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0 };
+    const weights = [_]f64{ 1.0, 2.0, 3.0, 1.0, 8.0, 1.0, 5.0 };
+
+    const wls_model = wls.Wls.init(&x_points, &y_points, &weights);
     const fitted_model = wls_model.fit_linear_regression();
 
     asserts.assert_not_null(fitted_model);
