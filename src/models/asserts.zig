@@ -22,12 +22,8 @@ pub fn assert_have_same_size(array_1: []const f64, array_2: []const f64) void {
     assert(array_1.len == array_2.len);
 }
 
-pub fn assert_have_size_greater_than_two(array: []const f64) void {
+pub fn assert_have_size_greater_two(array: []const f64) void {
     assert(array.len >= 2);
-}
-
-pub fn assert_true(condition: bool) void {
-    assert(condition);
 }
 
 pub fn assert_not_null(optional_point: ?point.Point) void {

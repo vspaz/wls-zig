@@ -8,7 +8,7 @@ pub const Wls = struct {
     _weights: []const f64,
 
     pub fn init(x_points: []const f64, y_points: []const f64, weights: []const f64) Wls {
-        asserts.assert_have_size_greater_than_two(x_points);
+        asserts.assert_have_size_greater_two(x_points);
         asserts.assert_have_same_size(x_points, y_points);
         asserts.assert_have_same_size(x_points, weights);
 
@@ -46,9 +46,7 @@ pub const Wls = struct {
 
         const dividend = sum_of_weights * sum_of_products_of_x_and_y_and_weights - sum_of_products_of_xi_and_wi * sum_of_products_of_y_and_weights;
         const divisor = sum_of_weights * sum_of_products_of_weights_and_x_squared - sum_of_products_of_xi_and_wi * sum_of_products_of_xi_and_wi;
-        if (divisor == 0.0) {
-            return null;
-        }
+        if (divisor == 0.0) return null;
 
         const slope = dividend / divisor;
         const intercept = (sum_of_products_of_y_and_weights - slope * sum_of_products_of_xi_and_wi) / sum_of_weights;
@@ -64,7 +62,7 @@ test "test wls model with weights ok" {
 
     const wls = Wls.init(&x_points, &y_points, &weights);
     const fitted_model = wls.fit_linear_regression();
-    asserts.assert_fitted_model(asserts.Values{ .model = fitted_model, .expected_intercept = 2.14285714, .expected_slope = 0.150862, .delta = 1.0e-6 });
+    asserts.assert_fitted_model(.{ .model = fitted_model, .expected_intercept = 2.14285714, .expected_slope = 0.150862, .delta = 1.0e-6 });
 }
 
 test "test wls model with stable weights ok" {
@@ -74,14 +72,14 @@ test "test wls model with stable weights ok" {
     const wls = Wls.init(&x_points, &y_points, &weights);
 
     const fitted_model = wls.fit_linear_regression();
-    asserts.assert_fitted_model(asserts.Values{ .model = fitted_model, .expected_intercept = 2.14285714, .expected_slope = 0.25, .delta = 1.0e-6 });
+    asserts.assert_fitted_model(.{ .model = fitted_model, .expected_intercept = 2.14285714, .expected_slope = 0.25, .delta = 1.0e-6 });
 }
 
 test "test horizontal line ok" {
     const wls = Wls.init(&.{ 0.0, 1.0 }, &.{ 10.0, 10.0 }, &.{ 1.0, 1.0 });
 
     const fitted_model = wls.fit_linear_regression();
-    asserts.assert_fitted_model(asserts.Values{ .model = fitted_model, .expected_intercept = 10.0, .expected_slope = 0.0, .delta = 0.0 });
+    asserts.assert_fitted_model(.{ .model = fitted_model, .expected_intercept = 10.0, .expected_slope = 0.0, .delta = 0.0 });
 }
 
 test "test vertical line ok" {
@@ -93,12 +91,12 @@ test "test run uphill ok" {
     const wls = Wls.init(&.{ 0.0, 1.0 }, &.{ 0.0, 1.0 }, &.{ 1.0, 1.0 });
 
     const fitted_model = wls.fit_linear_regression();
-    asserts.assert_fitted_model(asserts.Values{ .model = fitted_model, .expected_intercept = 0.0, .expected_slope = 1.0, .delta = 0.0 });
+    asserts.assert_fitted_model(.{ .model = fitted_model, .expected_intercept = 0.0, .expected_slope = 1.0, .delta = 0.0 });
 }
 
 test "test run downhill ok" {
     const wls = Wls.init(&.{ 1.0, 0.0 }, &.{ 0.0, 1.0 }, &.{ 1.0, 1.0 });
 
     const fitted_model = wls.fit_linear_regression();
-    asserts.assert_fitted_model(asserts.Values{ .model = fitted_model, .expected_intercept = 1.0, .expected_slope = -1.0, .delta = 0.0 });
+    asserts.assert_fitted_model(.{ .model = fitted_model, .expected_intercept = 1.0, .expected_slope = -1.0, .delta = 0.0 });
 }
