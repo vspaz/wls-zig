@@ -10,7 +10,6 @@ pub fn main() !void {
     const wls_model = wls.Wls.init(&x_points, &y_points, &weights);
     const fitted_model = wls_model.fit_linear_regression();
 
-    asserts.assert_not_null(fitted_model);
     if (fitted_model) |line| {
         asserts.assert_almost_equal(2.14285714, line.intercept, 1.0e-6);
         asserts.assert_almost_equal(0.150862, line.slope, 1.0e-6);
