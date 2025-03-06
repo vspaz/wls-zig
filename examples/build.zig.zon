@@ -37,8 +37,8 @@
     // internet connectivity.
     .dependencies = .{
         .wls = .{
-            .url = "git+https://github.com/vspaz/wls-zig.git?ref=build-and-package#0daf3d301fd285b23b3df74035d9db1a8dc26409",
-            .hash = "wls-0.1.0-NK6PrugpAABzeIB8Q2xjcAm09Ma7D9FW9HG7FuEAnUet",
+            .url = "git+https://github.com/vspaz/wls-zig.git?ref=main#f4dfc9a98f8f538d6d25d7d3e1e431fe77d54744",
+            .hash = "wls-0.1.0-NK6PrjMoAABYyveo97dzY5AugQxqcGgExHsaDVMxx1wm",
         },
     },
     .paths = .{
