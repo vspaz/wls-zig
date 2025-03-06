@@ -1,6 +1,7 @@
 const std = @import("std");
-const point = @import("point.zig");
+
 const asserts = @import("asserts.zig");
+const point = @import("point.zig");
 
 pub const Wls = struct {
     const Self = @This();

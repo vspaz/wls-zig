@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const point = @import("point.zig");
 
 const assert = std.debug.assert;

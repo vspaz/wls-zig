@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const asserts = @import("asserts.zig");
 
 pub const Point = struct {
