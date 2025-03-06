@@ -8,7 +8,7 @@ run:
 
 .PHONY: test
 test:
-	zig test src/main.zig
+	zig test src/wls.zig
 
 .PHONY: style-fix
 style-fix:
@@ -17,3 +17,4 @@ style-fix:
 .PHONY: clean
 clean:
 	rm -rf zig-out
+	rm -rf .zig-cache
