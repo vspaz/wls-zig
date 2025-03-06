@@ -3,23 +3,24 @@ const point = @import("point.zig");
 const asserts = @import("asserts.zig");
 
 pub const Wls = struct {
+    const Self = @This();
     _x_points: []const f64,
     _y_points: []const f64,
     _weights: []const f64,
 
-    pub fn init(x_points: []const f64, y_points: []const f64, weights: []const f64) Wls {
+    pub fn init(x_points: []const f64, y_points: []const f64, weights: []const f64) Self {
         asserts.assert_have_size_greater_two(x_points);
         asserts.assert_have_same_size(x_points, y_points);
         asserts.assert_have_same_size(x_points, weights);
 
-        return Wls{
+        return .{
             ._x_points = x_points,
             ._y_points = y_points,
             ._weights = weights,
         };
     }
 
-    pub fn fit_linear_regression(self: Wls) ?point.Point {
+    pub fn fit_linear_regression(self: Self) ?point.Point {
         var sum_of_weights: f64 = 0.0;
         var sum_of_products_of_weights_and_x_squared: f64 = 0.0;
         var sum_of_products_of_x_and_y_and_weights: f64 = 0.0;
@@ -51,7 +52,7 @@ pub const Wls = struct {
         const slope = dividend / divisor;
         const intercept = (sum_of_products_of_y_and_weights - slope * sum_of_products_of_xi_and_wi) / sum_of_weights;
 
-        return point.Point{ .intercept = intercept, .slope = slope };
+        return .{ .intercept = intercept, .slope = slope };
     }
 };
 
